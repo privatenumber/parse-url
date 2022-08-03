@@ -35,7 +35,7 @@ import normalizeUrl from "normalize-url";
 const parseUrl = (url, normalize = false) => {
 
     // Constants
-    const GIT_RE = /((git@|http(s)?:\/\/)([\w\.@]+)(\/|:))(([\~,\w,\-,\_,\/]+)(.git){0,1}((\/){0,1}))/
+    const GIT_RE = /^(?:git@|https?:\/\/)([\w\.@]+)[\/:]([\~,\w,\-,\_,\/]+(?:\.git)?\/?)$/
 
     if (typeof url !== "string" || !url.trim()) {
         const err = new Error("Invalid url.")
@@ -56,13 +56,13 @@ const parseUrl = (url, normalize = false) => {
 
     // Potential git-ssh urls
     if (parsed.protocol === "file") {
-        const matched  = parsed.href.match(GIT_RE)
+        const matched = parsed.href.match(GIT_RE)
         if (matched) {
             parsed.protocols = ["ssh"]
             parsed.protocol = "ssh"
-            parsed.resource = matched[4]
+            parsed.resource = matched[1]
             parsed.user = "git"
-            parsed.pathname = `/${matched[6]}`
+            parsed.pathname = `/${matched[2]}`
         }
     }
 
